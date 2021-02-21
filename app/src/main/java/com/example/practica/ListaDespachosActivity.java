@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.practica.lista_despachos.DespachosAdapter;
 import com.example.practica.lista_despachos.despachoClass;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -35,7 +36,7 @@ public class ListaDespachosActivity extends AppCompatActivity {
     private FloatingActionButton add_despacho; //para agregar despachos
     AlertDialog.Builder builder;
 
-    ArrayList<despachoClass> data;
+    ArrayList<despachoClass> data = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +48,21 @@ public class ListaDespachosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         add_despacho = (FloatingActionButton) findViewById(R.id.btnAddDespacho); //agregar despachos
+
+        Intent iin = getIntent();
+        Bundle b = iin.getExtras();
+
+        if(b!=null)
+        {
+            String address =(String) b.get("address");
+            LatLng latLng = (LatLng) b.get("latLng");
+            dataSet(address);
+
+        }else{
+
+            data.add(new despachoClass("Despacho 1", "Paine 2345", "Las Condes 2345"));
+            data.add(new despachoClass("Despacho 2", "Renca 2345", "Santiago 2345"));
+        }
 
         final AlertDialog alertD = new AlertDialog.Builder(this).create();
 
@@ -84,29 +100,16 @@ public class ListaDespachosActivity extends AppCompatActivity {
         });
 
         rvDespachos = (RecyclerView) findViewById(R.id.rvDespachos);
-        adapter = new DespachosAdapter(dataSet());
+        adapter = new DespachosAdapter(data);
         glm = new GridLayoutManager(this, 1);
         rvDespachos.setLayoutManager(glm);
         rvDespachos.setAdapter(adapter);
 
     }
 
-    private ArrayList<despachoClass> dataSet() {
-        data = new ArrayList<>();
-        data.add(new despachoClass("Despacho 1", "Paine 2345", "Las Condes 2345"));
-        data.add(new despachoClass("Despacho 2", "Renca 2345", "Santiago 2345"));
-        data.add(new despachoClass("Despacho 3", "Ñuñoa 2345", "San joaquin 2345"));
-        data.add(new despachoClass("Despacho 4", "La Reina 2345", "Buin 2345"));
-        data.add(new despachoClass("Despacho 1", "Paine 2345", "Las Condes 2345"));
-        data.add(new despachoClass("Despacho 2", "Renca 2345", "Santiago 2345"));
-        data.add(new despachoClass("Despacho 3", "Ñuñoa 2345", "San joaquin 2345"));
-        data.add(new despachoClass("Despacho 4", "La Reina 2345", "Buin 2345"));
-        data.add(new despachoClass("Despacho 1", "Paine 2345", "Las Condes 2345"));
-        data.add(new despachoClass("Despacho 2", "Renca 2345", "Santiago 2345"));
-        data.add(new despachoClass("Despacho 3", "Ñuñoa 2345", "San joaquin 2345"));
-        data.add(new despachoClass("Despacho 4", "La Reina 2345", "Buin 2345"));
+    private void dataSet(String addr) {
+        data.add(new despachoClass("Despacho", addr, "Las Condes 2345"));
 
-
-        return data;
+        return;
     }
 }

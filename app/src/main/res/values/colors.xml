@@ -12,4 +12,8 @@
     <color name="btnSuccess">#28a745</color>
     <color name="btnBasic">#6c757d</color>
 
+    <color name="searchBackground">#e0e0e0</color>
+    <color name="searchHint">#616161</color>
+    <color name="searchText">#212121</color>
+
 </resources>

@@ -36,7 +36,7 @@ public class DespachosAdapter extends RecyclerView.Adapter<DespachosAdapter.Desp
             despachoClass despacho = data.get(position);
             holder.tvTitle.setText(despacho.getTitle());
             holder.tvLabel1.setText(despacho.getLabel1());
-            holder.tvLabel2.setText(despacho.getLabel2());
+            //holder.tvLabel2.setText(despacho.getLabel2());
 
        holder.llDespacho.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +66,7 @@ public class DespachosAdapter extends RecyclerView.Adapter<DespachosAdapter.Desp
                 super(itemView);
                 tvTitle = (TextView) itemView.findViewById(R.id.tvTitle);
                 tvLabel1 = (TextView) itemView.findViewById(R.id.tvLabel1);
-                tvLabel2 = (TextView) itemView.findViewById(R.id.tvLabel2);
+                //tvLabel2 = (TextView) itemView.findViewById(R.id.tvLabel2);
                 llDespacho = (LinearLayout) itemView.findViewById(R.id.llDespachos);
 
                 itemView.setOnClickListener(this);
