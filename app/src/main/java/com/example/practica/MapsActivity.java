@@ -60,7 +60,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private LinearLayout llMap;
     private TextView tvMap;
-    private Button btnMap;
+    private Button btnMapAccept;
+    private Button btnMapCancel;
     private EditText etMap;
 
     @Override
@@ -86,7 +87,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     // Perform action on key press
                     hideKeyboard();
                     LatLng search = getLocationFromAddress(getApplicationContext(), etMap.getText().toString());
-                    setMarker(search);
+                    setMarker(search, 1);
 
                     return true;
                 }
@@ -116,7 +117,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(final LatLng point) {
-                setMarker(point);
+                setMarker(point, 0);
             }
         });
     }
@@ -215,25 +216,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void setMarker(final LatLng point){
+    public void setMarker(final LatLng point, int type){
         allPoints.add(point);
         final String address = getAddress(getApplicationContext(), point.latitude, point.longitude);
 
         mMap.clear();
         mMap.addMarker(new MarkerOptions().position(point).title(address)).showInfoWindow();
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        if (type == 1) {
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
+        }
 
         llMap = (LinearLayout) findViewById(R.id.llMap);
         tvMap = (TextView) findViewById(R.id.tvMap);
-        btnMap = (Button) findViewById(R.id.btnMap);
+        btnMapAccept = (Button) findViewById(R.id.btnMapAccept);
+        btnMapCancel = (Button) findViewById(R.id.btnMapCancel);
 
         String s = "¿Agregar <b>" + address + "</b> a su recorrido?";
         tvMap.setText(Html.fromHtml(s));
         llMap.setVisibility(View.VISIBLE);
 
-        btnMap.setOnClickListener(new View.OnClickListener() {
+        btnMapAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(MapsActivity.this, ListaDespachosActivity.class);
@@ -241,6 +245,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 i.putExtra("latLng", point);
                 startActivity(i);
                 finish();
+            }
+        });
+
+        btnMapCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mMap.clear();
+                llMap.setVisibility(View.GONE);
             }
         });
     }
