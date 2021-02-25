@@ -1,42 +1,38 @@
 package com.example.practica;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.practica.lista_despachos.DespachosAdapter;
-import com.example.practica.lista_despachos.despachoClass;
-import com.google.android.gms.maps.model.LatLng;
+import com.example.practica.lista_despachos.FirebaseDespachoViewHolder;
+import com.example.practica.lista_despachos.despacho;
+import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
 public class ListaDespachosActivity extends AppCompatActivity {
 
     private RecyclerView rvDespachos;
-    private GridLayoutManager glm;
-    private DespachosAdapter adapter;
 
     private FloatingActionButton add_despacho; //para agregar despachos
-    AlertDialog.Builder builder;
+    private FirebaseAuth mAuth;
 
-    ArrayList<despachoClass> data = new ArrayList<>();
+    ArrayList<despacho> data = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,22 +42,16 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         add_despacho = (FloatingActionButton) findViewById(R.id.btnAddDespacho); //agregar despachos
 
-        Intent iin = getIntent();
-        Bundle b = iin.getExtras();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser user = mAuth.getCurrentUser();
 
-        if(b!=null)
-        {
-            String address =(String) b.get("address");
-            LatLng latLng = (LatLng) b.get("latLng");
-            dataSet(address);
+        DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference().child("Despachos").child(FirebaseMethods.getUserId());
+        Query query = databaseReference;
 
-        }else{
-
-            data.add(new despachoClass("Despacho 1", "Paine 2345", "Las Condes 2345"));
-            data.add(new despachoClass("Despacho 2", "Renca 2345", "Santiago 2345"));
+        if (user == null){
+            boolean flag = FirebaseMethods.registerUser("gabopezoa97@gmail.com", "12345a", "Gabriel Pezoa");
         }
 
         final AlertDialog alertD = new AlertDialog.Builder(this).create();
@@ -100,16 +90,36 @@ public class ListaDespachosActivity extends AppCompatActivity {
         });
 
         rvDespachos = (RecyclerView) findViewById(R.id.rvDespachos);
-        adapter = new DespachosAdapter(data);
-        glm = new GridLayoutManager(this, 1);
-        rvDespachos.setLayoutManager(glm);
-        rvDespachos.setAdapter(adapter);
+
+        setUpFirebaseAdapter(query);
+        Log.d("after setup", "data: " + String.valueOf(data));
 
     }
 
-    private void dataSet(String addr) {
-        data.add(new despachoClass("Despacho", addr, "Las Condes 2345"));
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        //updateUI(currentUser);
+    }
 
-        return;
+    private void setUpFirebaseAdapter(Query query) {
+
+        FirebaseRecyclerAdapter mFirebaseAdapter = new FirebaseRecyclerAdapter<despacho, FirebaseDespachoViewHolder>
+                (despacho.class, R.layout.content_despachos_fragment, FirebaseDespachoViewHolder.class, query) {
+            @Override
+            protected void populateViewHolder(FirebaseDespachoViewHolder firebaseDespachoViewHolder, despacho despacho, int i) {
+                data.add(despacho);
+                Log.d("populateView", "data: " + String.valueOf(data));
+                Log.d("populateView", "i: " + i);
+                firebaseDespachoViewHolder.bindUser(despacho, i+1);
+            }
+        };
+
+        rvDespachos.setHasFixedSize(true);
+        rvDespachos.setLayoutManager(new LinearLayoutManager(this));
+        rvDespachos.setAdapter(mFirebaseAdapter);
+
     }
 }

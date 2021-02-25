@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "425028459700",
+    "project_id": "herbalapp-4874f",
+    "storage_bucket": "herbalapp-4874f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:425028459700:android:e2db52d2c4a959f3264be1",
+        "android_client_info": {
+          "package_name": "com.example.practica"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "425028459700-ng02s165beulio651ep42bfs6embf8m5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBduIK64TU6QcwjU2K9o1DHdbOpOGt10Qc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "425028459700-ng02s165beulio651ep42bfs6embf8m5.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

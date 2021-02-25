@@ -26,7 +26,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.practica.lista_despachos.despachoClass;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -240,9 +239,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnMapAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                String descripcion = "Descripcion de la carga";
+                FirebaseMethods.addDispatch(point, descripcion, address);
                 Intent i = new Intent(MapsActivity.this, ListaDespachosActivity.class);
-                i.putExtra("address", address);
-                i.putExtra("latLng", point);
                 startActivity(i);
                 finish();
             }
