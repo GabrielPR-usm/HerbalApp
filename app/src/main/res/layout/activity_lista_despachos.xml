@@ -42,12 +42,24 @@
         android:id="@+id/btnAddDespacho"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
         android:clickable="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/plus" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnStartDespacho"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:layout_marginRight="15dp"
+        android:clickable="true"
+        app:layout_constraintBottom_toTopOf="@id/btnAddDespacho"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:src="@drawable/play"
+        app:maxImageSize="40dp"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

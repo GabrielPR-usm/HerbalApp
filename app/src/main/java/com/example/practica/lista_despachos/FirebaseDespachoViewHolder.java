@@ -1,7 +1,6 @@
 package com.example.practica.lista_despachos;
 
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;

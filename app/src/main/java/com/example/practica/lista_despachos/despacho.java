@@ -9,25 +9,33 @@ public class despacho {
     private String fecha;
     private String hora;
     private String address;
+    private String ciudad;
     private String descripcion;
-    private String estado;
     private Double latitude;
     private Double longitude;
 
-    public despacho(String responsableId, String despachoId, String fecha, String hora, String direccion, String descripcion, String estado, Double latitude, Double longitude) {
+    public despacho(String responsableId, String despachoId, String fecha, String hora, String direccion, String ciudad, String descripcion, Double latitude, Double longitude) {
         this.responsableId = responsableId;
         this.despachoId = despachoId;
         this.fecha = fecha;
         this.hora = hora;
         this.address = direccion;
+        this.ciudad = ciudad;
         this.descripcion = descripcion;
-        this.estado = estado;
         this.latitude = latitude;
         this.longitude = longitude;
     }
 
     public despacho(){
 
+    }
+
+    public String getCiudad() {
+        return ciudad;
+    }
+
+    public void setCiudad(String ciudad) {
+        this.ciudad = ciudad;
     }
 
     public String getResponsableId() {
@@ -76,14 +84,6 @@ public class despacho {
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
-    }
-
-    public String getEstado() {
-        return estado;
-    }
-
-    public void setEstado(String estado) {
-        this.estado = estado;
     }
 
     public Double getLatitude() {

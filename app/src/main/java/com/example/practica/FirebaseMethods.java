@@ -11,6 +11,7 @@ import com.example.practica.lista_despachos.despacho;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.FirebaseError;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -77,7 +78,7 @@ public class FirebaseMethods {
         return taskDone[0];
     }
 
-    public static boolean addDispatch(final LatLng ubicacion, final String descripcionCarga, final String address){
+    public static boolean addDispatch(final LatLng ubicacion, final String descripcionCarga, final String address, final String city){
 
         mAuth = FirebaseAuth.getInstance();
         mDataBase = FirebaseDatabase.getInstance().getReference();
@@ -96,13 +97,13 @@ public class FirebaseMethods {
             Map<String, Object> map = new HashMap<>();
             map.put("descripcion", descripcionCarga);
             map.put("address", address);
-            map.put("estado", "pendiente");
+            map.put("ciudad", city);
             map.put("fecha", fecha);
             map.put("hora", hora);
             map.put("latitude", ubicacion.latitude);
             map.put("longitude", ubicacion.longitude);
 
-            mDataBase.child("Despachos").child(id).push().setValue(map);
+            mDataBase.child("Despachos").child("Pendientes").child(id).push().setValue(map);
             taskDone = true;
         }
         return taskDone;
@@ -113,6 +114,50 @@ public class FirebaseMethods {
         mDataBase = FirebaseDatabase.getInstance().getReference();
         String id = mAuth.getCurrentUser().getUid();
         return id;
+    }
+
+    public static void updateDespacho(String despachoId){
+
+        mAuth = FirebaseAuth.getInstance();
+        mDataBase = FirebaseDatabase.getInstance().getReference();
+
+        String id = mAuth.getCurrentUser().getUid();
+
+        DatabaseReference from = mDataBase.child("Despachos").child("Pendientes").child(id).child(despachoId);
+        DatabaseReference to = mDataBase.child("Despachos").child("Completados").child(id).child(despachoId);
+
+        moveFirebaseRecord(from, to);
+    }
+
+    public static void moveFirebaseRecord(final DatabaseReference fromPath, final DatabaseReference toPath)
+    {
+        fromPath.addListenerForSingleValueEvent(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot)
+            {
+                toPath.setValue(dataSnapshot.getValue(), new DatabaseReference.CompletionListener()
+                {
+                    @Override
+                    public void onComplete(DatabaseError error, DatabaseReference firebase)
+                    {
+                        if (error != null)
+                        {
+                            System.out.println("Copy failed");
+                        }
+                        else
+                        {
+                            fromPath.removeValue();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                System.out.println("Copy failed");
+            }
+        });
     }
 
     /*

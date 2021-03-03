@@ -50,6 +50,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public static LatLng currentLocation;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
     Marker mCurrLocationMarker;
@@ -69,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
 
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
+            checkLocationPermission(this, this);
         }
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getSupportFragmentManager()
@@ -151,7 +152,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mCurrLocationMarker.remove();
         }
 
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());//Obtiene posicion actual
+        currentLocation = new LatLng(location.getLatitude(), location.getLongitude());//Obtiene posicion actual
 
         LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -162,7 +163,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return;
         }
 
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(currentLocation));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         if (mGoogleApiClient != null) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient,
@@ -172,18 +173,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
-    public boolean checkLocationPermission() {
-        if (ContextCompat.checkSelfPermission(this,
+
+    public static boolean checkLocationPermission(Context ctx, Activity act) {
+        if (ContextCompat.checkSelfPermission(ctx,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(act,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(act,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             } else {
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(act,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         MY_PERMISSIONS_REQUEST_LOCATION);
             }
@@ -192,6 +194,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             return true;
         }
     }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
@@ -217,12 +220,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     public void setMarker(final LatLng point, int type){
         allPoints.add(point);
-        final String address = getAddress(getApplicationContext(), point.latitude, point.longitude);
+        final String address = getAddress(getApplicationContext(), point.latitude, point.longitude, 1);
+        final String city = getAddress(getApplicationContext(), point.latitude, point.longitude, 2);
 
         mMap.clear();
         mMap.addMarker(new MarkerOptions().position(point).title(address)).showInfoWindow();
 
-        if (type == 1) {
+        if (type == 1) {//se busca en el input text
             mMap.moveCamera(CameraUpdateFactory.newLatLng(point));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(14));
         }
@@ -240,7 +244,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View view) {
                 String descripcion = "Descripcion de la carga";
-                FirebaseMethods.addDispatch(point, descripcion, address);
+                FirebaseMethods.addDispatch(point, descripcion, address, city);
                 Intent i = new Intent(MapsActivity.this, ListaDespachosActivity.class);
                 startActivity(i);
                 finish();
@@ -256,8 +260,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
-    public static String getAddress(Context context, double LATITUDE, double LONGITUDE){
+    public static String getAddress(Context context, double LATITUDE, double LONGITUDE, int typeQuery){//typeQuery: 1 - address, 2- city
         //Set Address
+
         try {
             Geocoder geocoder = new Geocoder(context, Locale.getDefault());
             List<Address> addresses = geocoder.getFromLocation(LATITUDE, LONGITUDE, 1);
@@ -270,7 +275,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 String postalCode = addresses.get(0).getPostalCode();
                 String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
 
-                return address;
+                if(typeQuery == 1)
+                    return address;
+                else if(typeQuery == 2)
+                    return city;
             }
 
         } catch (IOException e) {
