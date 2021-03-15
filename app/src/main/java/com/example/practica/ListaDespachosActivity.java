@@ -1,42 +1,44 @@
 package com.example.practica;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.Request;
-import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HttpResponse;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.example.practica.lista_despachos.FirebaseDespachoViewHolder;
-import com.example.practica.lista_despachos.despacho;
+import com.example.practica.lista_despachos.classDespacho;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,7 +47,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
@@ -53,11 +54,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class ListaDespachosActivity extends AppCompatActivity {
 
@@ -66,20 +66,30 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
     private String MY_KEY = "AIzaSyCXBbshQNc65iXw86KBT0r3QrvX0fHI-vc";
 
+    Query query;
+
     private RecyclerView rvDespachos;
     FirebaseRecyclerAdapter mFirebaseAdapter;
 
     private FloatingActionButton add_despacho; //para agregar despachos
     private FloatingActionButton startDriving;
-    private FirebaseAuth mAuth;
 
-    ArrayList<despacho> data = new ArrayList<>();
-    ArrayList<despacho> sortedData;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    FirebaseUser user;
+
+    ArrayList<classDespacho> data = new ArrayList<>();
+    ArrayList<classDespacho> sortedData;
 
     Integer distanceMatrix[][];
 
+    Context mContext;
+    static Activity mActivity;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mAuth = FirebaseAuth.getInstance();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lista_despachos);
@@ -87,24 +97,38 @@ public class ListaDespachosActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            MapsActivity.checkLocationPermission(this, this);
-        }
+        // [START auth_state_listener] ,this method execute as soon as there is a change in Auth status , such as user sign in or sign out.
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser user = mAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    //redirect
+                    Log.d("user ", user.getUid());
+                    query = FirebaseDatabase.getInstance().getReference()
+                            .child("Despachos")
+                            .child("UNASIGNED")
+                            .orderByChild("ciudad");
+                    setUpFirebaseAdapter(query);
+                    Log.d("adapter ", "set");
 
-        Query query = FirebaseDatabase.getInstance().getReference().child("Despachos").child("Pendientes").child(FirebaseMethods.getUserId()).orderByChild("ciudad");
+                } else {
+                    // User is signed out
+                    Log.d("onCreate", "onAuthStateChanged:signed_out");
+                    setUpFirebaseAdapter(null);
+                }
 
-        if (user == null) {
-            boolean flag = FirebaseMethods.registerUser("gabopezoa97@gmail.com", "12345a", "Gabriel Pezoa");
-        }
+            }
+        };
 
         setupUI();
 
-        setUpFirebaseAdapter(query);
+        currentLocation = getLocation(this, this);
 
-        currentLocation = getLocation();
+        mContext = this;
+        mActivity = this;
 
     }
 
@@ -112,8 +136,9 @@ public class ListaDespachosActivity extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
-        mFirebaseAdapter.startListening();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
+        mAuth.addAuthStateListener(mAuthListener);
+        //mFirebaseAdapter.startListening();
+        user = mAuth.getCurrentUser();
 
     }
 
@@ -121,7 +146,7 @@ public class ListaDespachosActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Location current = getLocation();
+        Location current = getLocation(this, this);
 
         /*
         if(HaversineDistance(current.getLatitude(), current.getLongitude(), data.get(0).getLatitude(), data.get(0).getLongitude()) < 100){
@@ -138,7 +163,30 @@ public class ListaDespachosActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
         mFirebaseAdapter.stopListening();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_logout:
+                mAuth.signOut();
+                startActivity(new Intent(ListaDespachosActivity.this, LoginActivity.class));
+                //finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void setupUI(){
@@ -155,18 +203,18 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
                 // Get the layout inflater
                 LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                View popupView = inflater.inflate(R.layout.pop_up, null);
+                View popupView = inflater.inflate(R.layout.popup_add_despacho, null);
 
                 Button btnDestino = (Button) popupView.findViewById(R.id.btnMapaDestino);
                 Button btnOrigen = (Button) popupView.findViewById(R.id.btnMapaOrigen);
+                TextView tvX = popupView.findViewById(R.id.tvX);
 
                 btnOrigen.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         Log.d("TAGCITO", "boton origen");
                         alertD.cancel();
-                        startActivity(new Intent(ListaDespachosActivity.this, MapsActivity.class));
-                        finish();
+                        startActivity(new Intent(ListaDespachosActivity.this, CrearDespachoActivity.class));
                     }
                 });
 
@@ -175,18 +223,21 @@ public class ListaDespachosActivity extends AppCompatActivity {
                     public void onClick(View view) {
                         Log.d("TAGCITO", "boton destino");
                         alertD.cancel();
+                        /*
                         Intent i = new Intent(ListaDespachosActivity.this, FolioActivity.class);
                         String despachoId = data.get(0).getDespachoId();
                         Log.d("despachoId", despachoId);
                         i.putExtra("despachoId", despachoId);
                         startActivity(i);
-                        finish();
-                        //launchNavigation();
-                        //getDistanceInfo();
-                        //Log.d("TAGCITO", MapsActivity.currentLocation.toString());
-                        //sortDestinations();
-                        //Intent b = new Intent(Intent.ACTION_VIEW, Uri.parse(getDirectionsUrl(MapsActivity.currentLocation, MapsActivity.currentLocation)));
-                        //startActivity(b);
+
+                         */
+                    }
+                });
+
+                tvX.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        alertD.cancel();
                     }
                 });
 
@@ -198,19 +249,32 @@ public class ListaDespachosActivity extends AppCompatActivity {
         startDriving.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchNavigation();
+                //launchNavigation();
+                String url = getDirectionsUrl(data.get(0).getDestinos(), mContext);
+                if(url != null){
+                    Intent b = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(b);
+                }
             }
         });
     }
 
     private void setUpFirebaseAdapter(Query query) {
 
-        FirebaseRecyclerOptions<despacho> options =
-                new FirebaseRecyclerOptions.Builder<despacho>()
-                        .setQuery(query, despacho.class)
+        if(query == null){
+
+            return;
+
+        }
+
+        Log.d("adapter", "begining");
+
+        FirebaseRecyclerOptions<classDespacho> options =
+                new FirebaseRecyclerOptions.Builder<classDespacho>()
+                        .setQuery(query, classDespacho.class)
                         .build();
 
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<despacho, FirebaseDespachoViewHolder> (options) {
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<classDespacho, FirebaseDespachoViewHolder> (options) {
 
             @NonNull
             @Override
@@ -218,13 +282,15 @@ public class ListaDespachosActivity extends AppCompatActivity {
                 View view = LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.content_despachos_fragment, parent, false);
 
+                Log.d("adapter", "onCreateView");
+
                 return new FirebaseDespachoViewHolder(view);
             }
 
             @Override
-            protected void onBindViewHolder(@NonNull FirebaseDespachoViewHolder firebaseDespachoViewHolder, int i, @NonNull despacho despacho) {
+            protected void onBindViewHolder(@NonNull FirebaseDespachoViewHolder firebaseDespachoViewHolder, int i, @NonNull classDespacho despacho) {
                 String key = getRef(i).getKey();
-                despacho.setDespachoId(key);
+                despacho.setId(key);
                 data.add(despacho);
                 firebaseDespachoViewHolder.bindUser(despacho, i + 1);
             }
@@ -233,6 +299,9 @@ public class ListaDespachosActivity extends AppCompatActivity {
         rvDespachos.setHasFixedSize(true);
         rvDespachos.setLayoutManager(new LinearLayoutManager(this));
         rvDespachos.setAdapter(mFirebaseAdapter);
+        mFirebaseAdapter.startListening();
+
+        Log.d("adapter", "before helper");
 
         //Helper para poder hacer draggin de los items del recyclerview
         createHelper();
@@ -250,8 +319,6 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
                 mFirebaseAdapter.notifyItemMoved(position_dragged, position_target);
 
-                printData();
-
                 return false;
             }
 
@@ -264,33 +331,29 @@ public class ListaDespachosActivity extends AppCompatActivity {
         helper.attachToRecyclerView(rvDespachos);
     }
 
-    private void printData() {
-        for (int i = 0; i < data.size(); i++)
-            Log.d("CURRENT DATA: ", data.get(i).getAddress());
-    }
-
-    private Location getLocation() {
+    public static Location getLocation(Activity activity, Context context) {
 
         final Location[] loc = new Location[1];
 
         FusedLocationProviderClient client =
-                LocationServices.getFusedLocationProviderClient(this);
+                LocationServices.getFusedLocationProviderClient(activity);
 
         // Get the last known location
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             return loc[0];
         }
         client.getLastLocation()
-                .addOnCompleteListener(this, new OnCompleteListener<Location>() {
+                .addOnCompleteListener(activity, new OnCompleteListener<Location>() {
                     @Override
                     public void onComplete(@NonNull Task<Location> task) {
                         loc[0] = task.getResult();
                     }
                 });
 
+        Log.d("getLocation ", String.valueOf(loc[0]));
         return loc[0];
     }
-
+/*
     private void launchNavigation(){
 
         Double lat = data.get(0).getLatitude();
@@ -302,37 +365,61 @@ public class ListaDespachosActivity extends AppCompatActivity {
         startActivity(mapIntent);
     }
 
-    private String getDirectionsUrl(LatLng origin, LatLng dest) {
+ */
+
+    public static String getDirectionsUrl(String destinos, Context context) {
+
+        String navUrl = null;
 
         // Origin of route
-        String str_origin = "origin=" + origin.latitude + "," + origin.longitude;
+        Location origin = getLastKnownLocation(context);
 
-        // Destination of route
-        String str_dest = "destination=" + dest.latitude + "," + dest.longitude;
+        if(origin != null) {
+            String str_origin = "origin=" + origin.getLatitude() + "," + origin.getLongitude();
 
-        // Waypoints
-        String wp = "";
-        for (int i = 0; i < MAX_POINTS; i++) {
+            // Destination of route
+            String str_dest = "";
+            String wp = "";
 
-            Double lat = sortedData.get(i).getLatitude();
-            Double lng = sortedData.get(i).getLongitude();
+            String[] destinosArray = destinos.split("<");
+            int nDestinos = destinosArray.length;
+            int i = 1;
+            int j = 0;
 
-            if (i == 0){
-                wp = "waypoints=";
+            for (String dest : destinosArray) {
+                String[] latLng = dest.split(";");
+                Double lat = Double.valueOf(latLng[0]);
+                Double lng = Double.valueOf(latLng[1]);
+
+                if (i == nDestinos - 1) {
+                    //se agrega destino final
+                    str_dest = "destination=" + lat + "," + lng;
+                } else if (i < nDestinos - 1) {
+                    //se agregan waypoints
+                    if (j == 0) {
+                        wp = "waypoints=";
+                    }
+                    if (j == nDestinos - 1) {
+                        wp += lat.toString() + "," + lng.toString();
+                    } else {
+                        wp += lat.toString() + "," + lng.toString() + "%7C";
+                    }
+                    j++;
+                }
+
+                i++;
             }
 
-            if (i == MAX_POINTS - 1) {
-                wp += lat.toString() + "," + lng.toString();
-            } else {
-                wp += lat.toString() + "," + lng.toString() + "%7C";
-            }
+            // Para lanzar navigation
+            String mode = "travelmode=driving&";
+            navUrl = "https://www.google.com/maps/dir/?api=1&" + str_origin + "&" + str_dest + "&" + mode + wp;
+
+        }else{
+            Toast.makeText(context, "No se pudo obtener su ubicacion", Toast.LENGTH_SHORT).show();
+
+            MapsActivity.enableUbication(mActivity);
+
         }
-
-        // Para lanzar navigation
-        String mode = "travelmode=driving&";
-        String navUrl = "https://www.google.com/maps/dir/?api=1&" + str_origin + "&" + str_dest + "&" + mode + wp;
-
-        Log.d("FINAL URL", navUrl);
 
         return navUrl;
     }
@@ -381,7 +468,7 @@ public class ListaDespachosActivity extends AppCompatActivity {
     }
 
  */
-
+/*
     private void getDistanceInfo() {//realiza consulta a api de google y crea matriz de distancias
 
         final int nDespachos = data.size();
@@ -444,6 +531,7 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
     }
 
+ */
     private static int HaversineDistance(double lat1, double lon1, double lat2, double lon2) {
 
         double earthRadius = 6371; // km
@@ -466,6 +554,25 @@ public class ListaDespachosActivity extends AppCompatActivity {
 
         return (int)distanceInMeters;
 
+    }
+
+    private static Location getLastKnownLocation(Context context) {
+        Location l=null;
+        LocationManager mLocationManager = (LocationManager) context.getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if(ContextCompat.checkSelfPermission(context,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED) {
+                l = mLocationManager.getLastKnownLocation(provider);
+            }
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
 }

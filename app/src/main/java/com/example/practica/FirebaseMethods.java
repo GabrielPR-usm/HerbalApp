@@ -1,30 +1,38 @@
 package com.example.practica;
 
+import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
+import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
-import com.example.practica.lista_despachos.despacho;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.FirebaseError;
+import com.google.firebase.FirebaseNetworkException;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class FirebaseMethods {
 
@@ -78,7 +86,57 @@ public class FirebaseMethods {
         return taskDone[0];
     }
 
-    public static boolean addDispatch(final LatLng ubicacion, final String descripcionCarga, final String address, final String city){
+    public static void signIn(final String email, String password, final Activity activity) {
+        Log.d("signIn: ", email);
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(activity, new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                Log.d("signIn: ", " Verification : signIn With Email:onComplete:" + task.isSuccessful());
+                //  If sign in succeeds i.e if task.isSuccessful(); returns true then the auth state listener will be notified and logic to handle the
+                // signed in user can be handled in the listener.
+
+
+                // If sign in fails, display a message to the user.
+                if (!task.isSuccessful()) {
+                    try {
+                        throw task.getException();
+                    } catch (FirebaseAuthInvalidUserException e) {
+                        Log.d("signIn: ", "Invalid Emaild Id");
+
+                    } catch (FirebaseAuthInvalidCredentialsException e) {
+                        Log.d("signIn: ", "invalid pass");
+
+                    } catch (FirebaseNetworkException e) {
+                        Log.d("signIn: ", "no Network");
+
+                    } catch (Exception e) {
+                        Log.d("signIn: ", e.getMessage());
+                    }
+                    Log.d("signIn: ", String.valueOf(task.getException()));
+                    Toast.makeText(activity, R.string.Error, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
+
+    public static boolean addDispatch(final String empresa,
+                                      final String responsable,
+                                      final String nombre1,
+                                      final String nombre2,
+                                      final String rut1,
+                                      final String rut2,
+                                      final String valor,
+                                      final String city,
+                                      final Boolean boolMoto,
+                                      final Boolean boolCamioneta,
+                                      final Boolean boolGestionP,
+                                      final Boolean boolGestionE,
+                                      final String destinos
+                                      ){
 
         mAuth = FirebaseAuth.getInstance();
         mDataBase = FirebaseDatabase.getInstance().getReference();
@@ -95,25 +153,30 @@ public class FirebaseMethods {
             String id = mAuth.getCurrentUser().getUid();
 
             Map<String, Object> map = new HashMap<>();
-            map.put("descripcion", descripcionCarga);
-            map.put("address", address);
+            map.put("id_creador", id);
+
             map.put("ciudad", city);
             map.put("fecha", fecha);
             map.put("hora", hora);
-            map.put("latitude", ubicacion.latitude);
-            map.put("longitude", ubicacion.longitude);
 
-            mDataBase.child("Despachos").child("Pendientes").child(id).push().setValue(map);
+            map.put("empresa", empresa);
+            map.put("responsable", responsable);
+            map.put("nombre1", nombre1);
+            map.put("nombre2", nombre2);
+            map.put("rut1", rut1);
+            map.put("rut2", rut2);
+            map.put("valor", valor);
+            map.put("boolMoto", boolMoto);
+            map.put("boolCamioneta", boolCamioneta);
+            map.put("boolGestionP", boolGestionP);
+            map.put("boolGestionE", boolGestionE);
+
+            map.put("destinos", destinos);
+
+            mDataBase.child("Despachos").child("UNASIGNED").push().setValue(map);
             taskDone = true;
         }
         return taskDone;
-    }
-
-    public static String getUserId(){
-        mAuth = FirebaseAuth.getInstance();
-        mDataBase = FirebaseDatabase.getInstance().getReference();
-        String id = mAuth.getCurrentUser().getUid();
-        return id;
     }
 
     public static void updateDespacho(String despachoId){
@@ -158,6 +221,44 @@ public class FirebaseMethods {
                 System.out.println("Copy failed");
             }
         });
+    }
+
+    public static void uploadImage(Uri filePath, final Context context) {
+
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference storageReference = storage.getReference();
+
+        if(filePath != null)
+        {
+            final ProgressDialog progressDialog = new ProgressDialog(context);
+            progressDialog.setTitle("Uploading...");
+            progressDialog.show();
+
+            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+            ref.putFile(filePath)
+                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                            progressDialog.dismiss();
+                            Toast.makeText(context, "Uploaded", Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            progressDialog.dismiss();
+                            Toast.makeText(context, "Failed "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    })
+                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
+                        @Override
+                        public void onProgress(UploadTask.TaskSnapshot taskSnapshot) {
+                            double progress = (100.0*taskSnapshot.getBytesTransferred()/taskSnapshot
+                                    .getTotalByteCount());
+                            progressDialog.setMessage("Uploaded "+(int)progress+"%");
+                        }
+                    });
+        }
     }
 
     /*

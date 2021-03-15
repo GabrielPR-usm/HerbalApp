@@ -21,15 +21,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCXBbshQNc65iXw86KBT0r3QrvX0fHI-vc" />
 
-        <activity
-            android:name=".ListaDespachosActivity"
-            android:label="Despachos"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".ListaDespachosActivity" />
         <activity
             android:name=".MapsActivity"
             android:label="Mapa"
@@ -39,6 +31,20 @@
             android:name=".FolioActivity"
             android:label="Folio del despacho"
             android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity android:name=".CrearDespachoActivity" />
+
+        <activity
+            android:name=".RegisterActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".LoginActivity"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

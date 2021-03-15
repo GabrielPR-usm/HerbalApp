@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Practica</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Cerrar sesión</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
@@ -9,4 +9,20 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+    <string name="Error">No se ha podido iniciar sesion</string>
+
+    <!-- LOGIN -->
+    <string name="register">REGISTRAR</string>
+    <string name="login_email_hint">Mail</string>
+    <string name="login_password_hint">Contraseña</string>
+    <string name="signup_login_hint">¿Ya tienes una cuenta? Accede</string>
+    <string name="login_signup_hint">¿Aún no tienes una cuenta? Registrate</string>
+    <string name="login_name_hint">Nombre</string>
+    <string name="login_mobile_number_hint">Número telefónico</string>
+
+    <string-array name="destinos_array">
+        <item>Ubicación actual</item>
+        <item>Buscar en el mapa</item>
+    </string-array>
 </resources>

@@ -1,0 +1,500 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorBackground"
+    android:orientation="vertical"
+    >
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:navigationIcon="?attr/homeAsUpIndicator"
+            app:title="AÑADIR DESPACHO"
+            app:titleTextColor="@color/colorWhite"
+            />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="6dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/llCliente"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:elevation="5dp"
+                tools:ignore="MissingConstraints">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="CLIENTE"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="20dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Empresa:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiEmpresa"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etEmpresa"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="(*)Responsable:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiResponsable"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etResponsable"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Fecha:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvFecha"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="10/12/97"
+                        android:textStyle="bold"
+                        android:gravity="left"
+                        android:textColor="@color/searchHint"
+                        android:layout_marginLeft="6dp"
+                        android:textSize="16dp"/>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Hora:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <TextView
+                        android:id="@+id/tvHora"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="10:00"
+                        android:textStyle="bold"
+                        android:gravity="left"
+                        android:textColor="@color/searchHint"
+                        android:layout_marginLeft="6dp"
+                        android:textSize="16dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGestiones"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:elevation="5dp"
+                app:layout_constraintTop_toBottomOf="@id/llCliente"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="GESTIONES"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginBottom="6dp"
+                    android:textSize="20dp"/>
+
+                <CheckBox
+                    android:id="@+id/cbMoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:text="Moto" />
+
+                <CheckBox
+                    android:id="@+id/cbCamioneta"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:text="Camioneta" />
+
+                <CheckBox
+                    android:id="@+id/cbGestionP"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:text="Gestión puerta a puerta" />
+
+                <CheckBox
+                    android:id="@+id/cbGestionE"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:text="Gestión ejecutiva" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llDestinos"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:elevation="5dp"
+                app:layout_constraintTop_toBottomOf="@id/llGestiones"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="DESTINOS"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginBottom="6dp"
+                    android:textSize="20dp"/>
+
+                <Button
+                    android:id="@+id/btnAddDestino"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/btnBasic"
+                    android:textColor="@color/colorWhite"
+                    android:text="Agregar destino"
+                    android:layout_marginBottom="10dp"
+                    android:layout_gravity="center" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llRecibido"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:elevation="5dp"
+                app:layout_constraintTop_toBottomOf="@id/llDestinos"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="RECIBIDO POR"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginBottom="6dp"
+                    android:textSize="20dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="1.- Nombre:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiNombre1"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etNombre1"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Rut:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiRut1"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etRut1"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="2.- Nombre:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiNombre2"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etNombre2"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:text="Rut:"
+                        android:textStyle="bold"
+                        android:gravity="right"
+                        android:layout_marginRight="6dp"
+                        android:textSize="16dp"/>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/tiRut2"
+                        style="@style/parent"
+                        android:layout_weight="1"
+                        android:layout_marginRight="10dp"
+                        >
+
+                        <EditText
+                            android:id="@+id/etRut2"
+                            style="@style/modifiedEditText"
+                            android:inputType="text"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llValor"
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/colorWhite"
+                android:padding="10dp"
+                android:elevation="5dp"
+                app:layout_constraintTop_toBottomOf="@id/llRecibido"
+                >
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Valor"
+                    android:textStyle="bold"
+                    android:textColor="@color/colorBlack"
+                    android:layout_marginBottom="6dp"
+                    android:textSize="20dp"/>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/tiValor"
+                    style="@style/parent"
+                    android:layout_weight="1"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginLeft="20dp"
+                    >
+
+                    <EditText
+                        android:id="@+id/etValor"
+                        style="@style/modifiedEditText"
+                        android:inputType="number"
+                        android:maxLines="1" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_marginTop="6dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:elevation="5dp"
+                android:layout_marginBottom="10dp"
+                app:layout_constraintTop_toBottomOf="@id/llValor"
+                >
+
+                <Button
+                    android:id="@+id/btnCancel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Cancelar"
+                    android:padding="6dp"
+                    android:background="@drawable/round_textedit"
+                    android:backgroundTint="@color/btnDanger"
+                    android:textColor="@color/colorWhite"
+                    />
+
+                <Button
+                    android:id="@+id/btnCrearDespacho"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Crear Despacho"
+                    android:padding="6dp"
+                    android:background="@drawable/round_textedit"
+                    android:backgroundTint="@color/btnSuccess"
+                    android:textColor="@color/colorWhite"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

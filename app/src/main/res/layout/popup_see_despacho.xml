@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/PopUp"
+    android:layout_width="match_parent"
+    android:layout_height="250dp"
+    android:background="@color/btnBasic"
+    android:padding="2dp"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="10dp"
+        android:background="@color/colorWhite"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_gravity="start"
+            android:layout_marginLeft="10dp"
+            >
+
+            <TextView
+                android:id="@+id/tvX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="x"
+                android:textSize="25dp"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DETALLES DEL DESPACHO"
+            android:textSize="20dp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="6dp"
+            />
+
+        <TextView
+            android:id="@+id/tvLabel1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empresa: "
+            android:textSize="16dp"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:id="@+id/tvLabel2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empresa: "
+            android:textSize="16dp"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:id="@+id/tvLabel3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empresa: "
+            android:textSize="16dp"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="4dp"
+            />
+
+        <TextView
+            android:id="@+id/tvLabel4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Empresa: "
+            android:textSize="16dp"
+            android:gravity="center"
+            android:textColor="@color/colorBlack"
+            android:layout_marginBottom="4dp"
+            />
+
+        <Button
+            android:id="@+id/btnIniciarViaje"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:layout_gravity="center"
+            android:backgroundTint="@color/btnBasic"
+            android:textColor="@color/colorWhite"
+            android:text="Iniciar viaje" />
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,5 +1,6 @@
 package com.example.practica;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -7,6 +8,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Criteria;
@@ -28,9 +30,13 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -39,6 +45,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         LocationListener {
 
     public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    private static final int REQUEST_CHECK_SETTINGS = 0x1;
     public static LatLng currentLocation;
     GoogleApiClient mGoogleApiClient;
     Location mLastLocation;
@@ -174,7 +185,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
 
-    public static boolean checkLocationPermission(Context ctx, Activity act) {
+    public static boolean checkLocationPermission(Context ctx, final Activity act) {
         if (ContextCompat.checkSelfPermission(ctx,
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -243,9 +254,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         btnMapAccept.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String descripcion = "Descripcion de la carga";
-                FirebaseMethods.addDispatch(point, descripcion, address, city);
-                Intent i = new Intent(MapsActivity.this, ListaDespachosActivity.class);
+                //String descripcion = "Descripcion de la carga";
+                //FirebaseMethods.addDispatch(point, descripcion, address, city);
+
+                Intent i = new Intent(MapsActivity.this, CrearDespachoActivity.class);
+                i.putExtra("lat", point.latitude);
+                i.putExtra("lng", point.longitude);
+                i.putExtra("addr", address);
                 startActivity(i);
                 finish();
             }
@@ -314,5 +329,48 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void hideKeyboard(){
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+    }
+
+    public static void enableUbication(final Activity act){
+
+        LocationRequest locationRequest = LocationRequest.create();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(5000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(act);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build());
+
+        task.addOnSuccessListener(act, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                // ...
+            }
+        });
+
+        task.addOnFailureListener(act, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(act,
+                                REQUEST_CHECK_SETTINGS);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                    }
+                }
+            }
+        });
     }
 }
