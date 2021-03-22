@@ -21,8 +21,4 @@
     <string name="login_name_hint">Nombre</string>
     <string name="login_mobile_number_hint">Número telefónico</string>
 
-    <string-array name="destinos_array">
-        <item>Ubicación actual</item>
-        <item>Buscar en el mapa</item>
-    </string-array>
 </resources>

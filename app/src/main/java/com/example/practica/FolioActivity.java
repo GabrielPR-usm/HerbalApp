@@ -19,6 +19,8 @@ import androidx.appcompat.widget.Toolbar;
 
 import java.io.IOException;
 
+//VISTA SIN USO IMPORTANTE. FUTURAMENTE SE UTILIZARA PARA SUBIR FOTO Y QR
+
 public class FolioActivity extends AppCompatActivity {
 
     private Button btnChoose, btnUpload, btnAceptar;
@@ -56,7 +58,7 @@ public class FolioActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Log.d("TAGCITO", "boton origen");
                 if(despachoId != null)
-                    FirebaseMethods.updateDespacho(despachoId);
+                    FirebaseMethods.updateDespacho(despachoId, 2);
                 startActivity(new Intent(FolioActivity.this, ListaDespachosActivity.class));
                 finish();
             }

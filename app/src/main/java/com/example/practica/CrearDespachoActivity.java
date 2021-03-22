@@ -112,6 +112,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
 
      */
 
+    //Se instancian los componentes de la vista y se le setean los valores a los correspondientes
     private void setupUI(){
         /* INSTANCIO COMPONENTES */
         llDestinos = (LinearLayout) findViewById(R.id.llDestinos);
@@ -150,6 +151,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
         setListeners();
     }
 
+    //Se ceran los listeners y acciones de los botonoes presentes en la vista
     private void setListeners(){
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -328,6 +330,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
 
     }
 
+    //Se obtiene la ubicacion actual
     private Location getLastKnownLocation() {
         Location l=null;
         LocationManager mLocationManager = (LocationManager)getApplicationContext().getSystemService(LOCATION_SERVICE);
@@ -347,6 +350,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
         return bestLocation;
     }
 
+    //Se guardan localmente los valores inputeados en la vista
     private void getValues(){
         empresa = etEmpresa.getText().toString();
         responsable = etResponsable.getText().toString();
@@ -362,6 +366,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
         gestionE = cbGestionE.isChecked();
     }
 
+    //En el caso de haber habido un cambio de vista, se obtienen los valores guardados previamente en Sharedpreferences. Ademas se restauran las vistas con estos valores
     public void restore() {
 
         nDestino = 1;
@@ -436,6 +441,7 @@ public class CrearDespachoActivity extends AppCompatActivity {
         }
     }
 
+    //Se guardan los valores inputeados en Sharedpreferences
     private void savePreferences(int flag){//0-save, 1-delete
         mPrefs = getSharedPreferences("myPrefs", MODE_PRIVATE);
         SharedPreferences.Editor ed = mPrefs.edit();

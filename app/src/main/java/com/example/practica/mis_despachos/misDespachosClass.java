@@ -1,6 +1,6 @@
-package com.example.practica.lista_despachos;
+package com.example.practica.mis_despachos;
 
-public class classDespacho {
+public class misDespachosClass {
 
     private String id;
     private String id_creador;
@@ -19,12 +19,14 @@ public class classDespacho {
     private Boolean boolGestionP;
     private Boolean boolGestionE;
     private String destinos;
+    private String ubicacionActual;
+    private String recorrido;
 
-    public classDespacho(){
+    public misDespachosClass(){
 
     }
 
-    public classDespacho(String id, String id_creador, String ciudad, String fecha, String hora, String empresa, String responsable, String nombre1, String nombre2, String rut1, String rut2, String valor, Boolean boolMoto, Boolean boolCamioneta, Boolean boolGestionP, Boolean boolGestionE, String destinos) {
+    public misDespachosClass(String id, String id_creador, String ciudad, String fecha, String hora, String empresa, String responsable, String nombre1, String nombre2, String rut1, String rut2, String valor, Boolean boolMoto, Boolean boolCamioneta, Boolean boolGestionP, Boolean boolGestionE, String destinos) {
         this.id = id;
         this.id_creador = id_creador;
         this.ciudad = ciudad;
@@ -42,6 +44,28 @@ public class classDespacho {
         this.boolGestionP = boolGestionP;
         this.boolGestionE = boolGestionE;
         this.destinos = destinos;
+    }
+
+    public misDespachosClass(String id, String id_creador, String ciudad, String fecha, String hora, String empresa, String responsable, String nombre1, String nombre2, String rut1, String rut2, String valor, Boolean boolMoto, Boolean boolCamioneta, Boolean boolGestionP, Boolean boolGestionE, String destinos, String ubicacionActual, String recorrido) {
+        this.id = id;
+        this.id_creador = id_creador;
+        this.ciudad = ciudad;
+        this.fecha = fecha;
+        this.hora = hora;
+        this.empresa = empresa;
+        this.responsable = responsable;
+        this.nombre1 = nombre1;
+        this.nombre2 = nombre2;
+        this.rut1 = rut1;
+        this.rut2 = rut2;
+        this.valor = valor;
+        this.boolMoto = boolMoto;
+        this.boolCamioneta = boolCamioneta;
+        this.boolGestionP = boolGestionP;
+        this.boolGestionE = boolGestionE;
+        this.destinos = destinos;
+        this.ubicacionActual = ubicacionActual;
+        this.recorrido = recorrido;
     }
 
     public String getId() {
@@ -178,5 +202,21 @@ public class classDespacho {
 
     public void setDestinos(String destinos) {
         this.destinos = destinos;
+    }
+
+    public String getUbicacionActual() {
+        return ubicacionActual;
+    }
+
+    public void setUbicacionActual(String ubicacionActual) {
+        this.ubicacionActual = ubicacionActual;
+    }
+
+    public String getRecorrido() {
+        return recorrido;
+    }
+
+    public void setRecorrido(String recorrido) {
+        this.recorrido = recorrido;
     }
 }

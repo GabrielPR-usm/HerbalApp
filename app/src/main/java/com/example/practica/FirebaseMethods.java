@@ -40,6 +40,7 @@ public class FirebaseMethods {
     static FirebaseAuth.AuthStateListener mAuthStateListener;
     static DatabaseReference mDataBase;
 
+    //Registra un usuario nuevo
     public static boolean registerUser(final String email, final String pass, final String name){
 
         mAuth = FirebaseAuth.getInstance();
@@ -86,6 +87,7 @@ public class FirebaseMethods {
         return taskDone[0];
     }
 
+    //loggea un usuario creado
     public static void signIn(final String email, String password, final Activity activity) {
         Log.d("signIn: ", email);
 
@@ -123,6 +125,7 @@ public class FirebaseMethods {
 
     }
 
+    //Se agrega un despacho a la base de datos
     public static boolean addDispatch(final String empresa,
                                       final String responsable,
                                       final String nombre1,
@@ -179,21 +182,44 @@ public class FirebaseMethods {
         return taskDone;
     }
 
-    public static void updateDespacho(String despachoId){
+    //se actualiza la ubicacion actual en un despacho ya creado y se actualiza tambien el historial de ubicaciones de ese despacho
+    public static void updateUbicacion(String personaId, String despachoId, String ubiActual, String recorrido){
+
+        mAuth = FirebaseAuth.getInstance();
+        mDataBase = FirebaseDatabase.getInstance().getReference();
+
+        //puede ser que muera porque no se si puede setear un campo que no existe
+        mDataBase.child("Despachos").child("PENDING").child(personaId).child(despachoId).child("ubicacionActual").setValue(ubiActual);
+        mDataBase.child("Despachos").child("PENDING").child(personaId).child(despachoId).child("recorrido").setValue(recorrido);
+
+    }
+
+    //Se mueven los despachos entre UNASIGNED, PENDING y COMPLETED
+    public static void updateDespacho(String despachoId, int query){//query: 1 - UNASIGNED-Pendiente; 2 - Pendiente-completado
+
+        Log.d("update: ", "id - " + despachoId);
 
         mAuth = FirebaseAuth.getInstance();
         mDataBase = FirebaseDatabase.getInstance().getReference();
 
         String id = mAuth.getCurrentUser().getUid();
 
-        DatabaseReference from = mDataBase.child("Despachos").child("Pendientes").child(id).child(despachoId);
-        DatabaseReference to = mDataBase.child("Despachos").child("Completados").child(id).child(despachoId);
+        DatabaseReference from = null;
+        DatabaseReference to = null;
+
+        if(query == 1){
+            from = mDataBase.child("Despachos").child("UNASIGNED").child(despachoId);
+            to = mDataBase.child("Despachos").child("PENDING").child(id).child(despachoId);
+        }else if(query == 2){
+            from = mDataBase.child("Despachos").child("PENDING").child(id).child(despachoId);
+            to = mDataBase.child("Despachos").child("COMPLETED").child(id).child(despachoId);
+        }
 
         moveFirebaseRecord(from, to);
     }
 
-    public static void moveFirebaseRecord(final DatabaseReference fromPath, final DatabaseReference toPath)
-    {
+    //Variable auxiliar, mueve una entrada desde "fromPath" a "toPath"
+    public static void moveFirebaseRecord(final DatabaseReference fromPath, final DatabaseReference toPath) {
         fromPath.addListenerForSingleValueEvent(new ValueEventListener()
         {
             @Override
@@ -207,6 +233,7 @@ public class FirebaseMethods {
                         if (error != null)
                         {
                             System.out.println("Copy failed");
+                            Log.d("move record: ", "error carnal");
                         }
                         else
                         {
@@ -223,6 +250,7 @@ public class FirebaseMethods {
         });
     }
 
+    //Sube imagenes a la base de datos (SIN TERMINAR)
     public static void uploadImage(Uri filePath, final Context context) {
 
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -260,43 +288,5 @@ public class FirebaseMethods {
                     });
         }
     }
-
-    /*
-    public static ArrayList<despacho> getUbicaciones(String id){
-        Log.d("loading data", "getUbicaciones");
-        final ArrayList<despacho> data = new ArrayList<>();
-        final int[] i = {1};
-
-        mAuth = FirebaseAuth.getInstance();
-        mDataBase = FirebaseDatabase.getInstance().getReference();
-
-        mDataBase.child("Despachos").child(id).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot ds: dataSnapshot.getChildren()){
-
-                    for (DataSnapshot ds1: ds.getChildren()){
-
-                        String address = ds1.child("address").getValue().toString();
-
-                        data.add(new despachoClass("Despacho " + i[0], address, ""));
-
-                        Log.d("loading data", "despacho " + i[0]);
-
-                        i[0]++;
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.d("TAGCITO", "ERROR");
-            }
-        });
-
-        return data;
-    }
-
-     */
 
 }

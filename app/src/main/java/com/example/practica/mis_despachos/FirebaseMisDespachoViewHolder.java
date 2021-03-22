@@ -1,4 +1,4 @@
-package com.example.practica.lista_despachos;
+package com.example.practica.mis_despachos;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -7,33 +7,28 @@ import android.content.Intent;
 import android.net.Uri;
 import android.text.Html;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.practica.CrearDespachoActivity;
-import com.example.practica.FirebaseMethods;
 import com.example.practica.ListaDespachosActivity;
 import com.example.practica.MapsActivity;
 import com.example.practica.R;
 
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 
-public class FirebaseDespachoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+public class FirebaseMisDespachoViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
     View mView;
     Context mContext;
     Activity mActivity;
-    classDespacho mDespacho;
+    misDespachosClass mDespacho;
 
-    public FirebaseDespachoViewHolder(View itemView) {
+    public FirebaseMisDespachoViewHolder(View itemView) {
         super(itemView);
         mView = itemView;
         mContext = itemView.getContext();
@@ -41,7 +36,7 @@ public class FirebaseDespachoViewHolder extends RecyclerView.ViewHolder implemen
         itemView.setOnClickListener(this);
     }
 
-    public void bindUser(classDespacho desp, int pos) {
+    public void bindUser(misDespachosClass desp, int pos) {
         this.mDespacho = desp;
         TextView tvTitle = (TextView) mView.findViewById(R.id.tvTitle);
         TextView tvLabel = (TextView) mView.findViewById(R.id.tvLabel1);
@@ -78,8 +73,7 @@ public class FirebaseDespachoViewHolder extends RecyclerView.ViewHolder implemen
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(LAYOUT_INFLATER_SERVICE);
         View popupView = inflater.inflate(R.layout.popup_see_despacho, null);
 
-        Button btnAgregar = (Button) popupView.findViewById(R.id.btnIniciarViaje);
-        btnAgregar.setText("Agregar a mis despachos");
+        Button btnIniciar = (Button) popupView.findViewById(R.id.btnIniciarViaje);
         TextView tvX = popupView.findViewById(R.id.tvX);
 
         TextView label1 = popupView.findViewById(R.id.tvLabel1);
@@ -97,11 +91,19 @@ public class FirebaseDespachoViewHolder extends RecyclerView.ViewHolder implemen
         label3.setText(Html.fromHtml(fecha));
         label4.setText(Html.fromHtml(valor));
 
-        btnAgregar.setOnClickListener(new View.OnClickListener() {
+        btnIniciar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                FirebaseMethods.updateDespacho(mDespacho.getId(), 1);
+                Log.d("TAGCITO", "boton destino");
                 alertD.cancel();
+                String url = ListaDespachosActivity.getDirectionsUrl(mDespacho.getDestinos(), mContext);
+                if(url != null){
+                    Intent b = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    mContext.startActivity(b);
+                }else{
+                    Toast.makeText(mContext, "No se pudo obtener su ubicacion", Toast.LENGTH_SHORT).show();
+                    MapsActivity.enableUbication(mActivity);
+                }
             }
         });
 

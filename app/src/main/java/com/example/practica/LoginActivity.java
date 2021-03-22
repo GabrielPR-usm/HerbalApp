@@ -70,7 +70,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 if (!email.isEmpty() && !pass.isEmpty()){
                     FirebaseMethods.signIn(email, pass, LoginActivity.this);
-                    startActivity(new Intent(LoginActivity.this, ListaDespachosActivity.class));
+                    startActivity(new Intent(LoginActivity.this, MisDespachosActivity.class));
                     finish(); //para prohibir que se pueda volver a esa vista
                 }
                 else{
@@ -88,7 +88,7 @@ public class LoginActivity extends AppCompatActivity {
         MapsActivity.checkLocationPermission(this, this);
         MapsActivity.enableUbication(this);
         if (mAuth.getCurrentUser() != null){ //con esto se puede cerrar la app y aun asi la sesion sigue iniciada
-            startActivity(new Intent(LoginActivity.this, ListaDespachosActivity.class));
+            startActivity(new Intent(LoginActivity.this, MisDespachosActivity.class));
             finish(); //para prohibir que se pueda volver a esa vista
         }
     }

@@ -10,6 +10,7 @@
     android:paddingBottom="10dp">
 
     <LinearLayout
+        android:id="@+id/llDespachos"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -62,6 +63,20 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:src="@drawable/play"
         app:maxImageSize="40dp"/>
+
+    <Button
+        android:id="@+id/btnCrearDespacho"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/llDespachos"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginBottom="20dp"
+        android:background="@drawable/round_textedit"
+        android:backgroundTint="@color/btnBasic"
+        android:padding="9dp"
+        android:text="Crear nuevo despacho"
+        android:textColor="@color/colorWhite"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

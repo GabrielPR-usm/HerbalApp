@@ -106,6 +106,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -132,6 +133,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
     }
+
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
@@ -140,6 +142,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .build();
         mGoogleApiClient.connect();
     }
+
     @Override
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
@@ -153,9 +156,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     mLocationRequest, this);
         }
     }
+
     @Override
     public void onConnectionSuspended(int i) {
     }
+
     @Override
     public void onLocationChanged(Location location) {
         mLastLocation = location;
@@ -181,6 +186,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     this);
         }
     }
+
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
     }
@@ -229,6 +235,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Luego de tocar una parte del mapa, se genera un marker y se muestran las opciones
     public void setMarker(final LatLng point, int type){
         allPoints.add(point);
         final String address = getAddress(getApplicationContext(), point.latitude, point.longitude, 1);
@@ -275,6 +282,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    //En base a una LAt y Lng, se obtiene una direccion completa
     public static String getAddress(Context context, double LATITUDE, double LONGITUDE, int typeQuery){//typeQuery: 1 - address, 2- city
         //Set Address
 
@@ -302,6 +310,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return "No encontrada";
     }
 
+    //En base a una direccion, se obtiene un objeto LatLng
     public LatLng getLocationFromAddress(Context context,String strAddress) {
 
         Geocoder coder = new Geocoder(context);
@@ -326,11 +335,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return p1;
     }
 
+    //Auxiliar para ocultar el teclado programaticamente
     public void hideKeyboard(){
         InputMethodManager imm = (InputMethodManager) getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
     }
 
+    //Se activa la ubicacion programaticamente
     public static void enableUbication(final Activity act){
 
         LocationRequest locationRequest = LocationRequest.create();
